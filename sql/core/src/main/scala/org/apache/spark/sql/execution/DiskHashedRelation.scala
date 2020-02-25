@@ -80,6 +80,16 @@ private[sql] class DiskPartition (
     */
   def insert(row: Row) = {
     /* IMPLEMENT THIS METHOD */
+    if(inputClosed){
+      throw new SparkException("The input is closed.")
+    }
+
+    data.add(row)
+
+    if(measurePartitionSize()>blockSize){
+      spillPartitionToDisk()
+      data.clear()
+    }
   }
 
   /**
@@ -153,6 +163,11 @@ private[sql] class DiskPartition (
     */
   def closeInput() = {
     /* IMPLEMENT THIS METHOD */
+    if(!data.isEmpty()){
+      spillPartitionToDisk()
+      data.clear()
+    }
+    outStream.close()
     inputClosed = true
   }
 
