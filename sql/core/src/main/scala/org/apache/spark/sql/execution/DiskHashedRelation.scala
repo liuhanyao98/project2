@@ -133,12 +133,18 @@ private[sql] class DiskPartition (
 
       override def next() = {
         /* IMPLEMENT THIS METHOD */
-        null
+        if(currentIterator.hasNext)
+          currentIterator.next()
+        else if(fetchNextChunk())
+          currentIterator.next()
       }
 
       override def hasNext() = {
         /* IMPLEMENT THIS METHOD */
-        false
+        if(!currentIterator.hasNext){
+          fetchNextChunk()
+        }
+        currentIterator.hasNext
       }
 
       /**
@@ -149,7 +155,18 @@ private[sql] class DiskPartition (
         */
       private[this] def fetchNextChunk(): Boolean = {
         /* IMPLEMENT THIS METHOD */
-        false
+
+        if(chunkSizeIterator.hasNext){
+          var chunkSize=chunkSizeIterator.next()
+          if(chunkSize<0)false
+          else{
+            byteArray=CS143Utils.getNextChunkBytes(inStream, chunkSize, byteArray)
+            currentIterator=CS143Utils.getListFromBytes(byteArray).iterator.asScala /* or iterator()? */
+            true
+          }
+        }
+        else false
+
       }
     }
   }
