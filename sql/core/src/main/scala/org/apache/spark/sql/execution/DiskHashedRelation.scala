@@ -53,11 +53,14 @@ protected [sql] final class GeneralDiskHashedRelation(partitions: Array[DiskPart
 
   override def getIterator() = {
     /* IMPLEMENT THIS METHOD */
-    null
+    partitions.iterator
   }
 
   override def closeAllPartitions() = {
     /* IMPLEMENT THIS METHOD */
+    for(partition <- partitions) {
+      partition.closePartition()
+    }
   }
 }
 
