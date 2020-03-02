@@ -230,6 +230,21 @@ private[sql] object DiskHashedRelation {
               size: Int = 64,
               blockSize: Int = 64000) = {
     /* IMPLEMENT THIS METHOD */
-    null
+    var diskPartitions : Array[DiskPartition] = new Array[DiskPartition](size)
+
+    for(i <- 0 until size)
+      diskPartitions(i) = new DiskPartition("partition_" + i.toString(), blockSize)
+
+    while(input.hasNext) {
+      val row = input.next()
+      val index : Int = row.hashCode() % size
+      diskPartitions(index).insert(row)
+    }
+
+    for(i <- 0 until size)
+      diskPartitions(i).closeInput()
+
+    val diskedHashedRelaion : GeneralDiskHashedRelation = new GeneralDiskHashedRelation(diskPartitions)
+    diskedHashedRelaion
   }
 }
