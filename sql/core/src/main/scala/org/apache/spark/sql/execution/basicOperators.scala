@@ -99,33 +99,34 @@ case class PartitionProject(projectList: Seq[Expression], child: SparkPlan) exte
     val keyGenerator = CS143Utils.getNewProjection(projectList, child.output)
 
     /* IMPLEMENT THIS METHOD */
+
+    // partition the whole input to disk
     val diskHashedRelation : GeneralDiskHashedRelation = DiskHashedRelation.apply(input, keyGenerator)
-    var iterator = diskHashedRelation.getIterator()
+    var iterator : Iterator[DiskPartition] = diskHashedRelation.getIterator()
 
-    while(iterator.hasNext) {
-      // read a partition from disk
-      val partition : DiskPartition = iterator.next()
-      val row_iterator = partition.getData()
-
-
-    }
+    val generator = CS143Utils.generateCachingIterator(projectList, child.output)
+    var disk_partition : DiskPartition = null
+    var row_iterator : Iterator[Row] = null
+    var output_iterator : Iterator[Row] = null
 
     new Iterator[Row] {
       def hasNext() = {
         /* IMPLEMENT THIS METHOD */
-        input.hasNext
+        if(output_iterator == null) {
+           fetchNextPartition()
+        }
+        else {
+          output_iterator.hasNext || fetchNextPartition()
+        }
       }
 
       def next() = {
         /* IMPLEMENT THIS METHOD */
-        if(input.hasNext) {
-          if(iterator.hasNext) {
-            val partition : DiskPartition = null
-            if(partition != null) {
-              partition.getData()
-            }
-
-          }
+        if(output_iterator == null || !output_iterator.hasNext) {
+          fetchNextPartition()
+        }
+        if(output_iterator.hasNext) {
+          output_iterator.next()
         }
         else null
       }
@@ -139,11 +140,12 @@ case class PartitionProject(projectList: Seq[Expression], child: SparkPlan) exte
       private def fetchNextPartition() = {
         /* IMPLEMENT THIS METHOD */
         if(iterator.hasNext) {
-          iterator.next()
+          disk_partition = iterator.next()
+          row_iterator = disk_partition.getData()
+          output_iterator = generator.apply(row_iterator)
+          output_iterator.hasNext
         }
-        else {
-          false
-        }
+        else false
       }
     }
   }
