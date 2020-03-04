@@ -140,7 +140,7 @@ private[sql] class DiskPartition (
           currentIterator.next()
         }
         else if(fetchNextChunk()) {
-            currentIterator.next()
+          currentIterator.next()
         }
         else {
           null
