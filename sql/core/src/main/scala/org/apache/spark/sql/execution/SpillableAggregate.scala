@@ -58,13 +58,13 @@ case class SpillableAggregate(
       case a: AggregateExpression =>
         ComputedAggregate(
           a,
-          BindReferences.bindReference(a, childOutput),
+          BindReferences.bindReference(a, child.output),
           AttributeReference(s"aggResult:$a", a.dataType, a.nullable)())
     }
   }.toArray
 
   /** Physical aggregator generated from a logical expression.  */
-  private[this] val aggregator: ComputedAggregate = computedAggregates.head //IMPLEMENT ME //first element of List
+  private[this] val aggregator: ComputedAggregate = computedAggregates(0) //IMPLEMENT ME //first element of List
 
   /** Schema of the aggregate.  */
   private[this] val aggregatorSchema: AttributeReference = aggregator.resultAttribute //IMPLEMENT ME
