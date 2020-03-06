@@ -52,15 +52,25 @@ case class SpillableAggregate(
                                 unbound: AggregateExpression,
                                 aggregate: AggregateExpression,
                                 resultAttribute: AttributeReference)
+  /** A list of aggregates that need to be computed for each group. */
+  private[this] val computedAggregates = aggregateExpressions.flatMap { agg =>
+    agg.collect {
+      case a: AggregateExpression =>
+        ComputedAggregate(
+          a,
+          BindReferences.bindReference(a, childOutput),
+          AttributeReference(s"aggResult:$a", a.dataType, a.nullable)())
+    }
+  }.toArray
 
   /** Physical aggregator generated from a logical expression.  */
-  private[this] val aggregator: ComputedAggregate = null //IMPLEMENT ME
+  private[this] val aggregator: ComputedAggregate = computedAggregates.head //IMPLEMENT ME //first element of List
 
   /** Schema of the aggregate.  */
-  private[this] val aggregatorSchema: AttributeReference = null //IMPLEMENT ME
+  private[this] val aggregatorSchema: AttributeReference = aggregator.resultAttribute //IMPLEMENT ME
 
   /** Creates a new aggregator instance.  */
-  private[this] def newAggregatorInstance(): AggregateFunction = null //IMPLEMENT ME
+  private[this] def newAggregatorInstance(): AggregateFunction = aggregator.aggregate.newInstance() //IMPLEMENT ME
 
   /** Named attributes used to substitute grouping attributes in the final result. */
   private[this] val namedGroups = groupingExpressions.map {

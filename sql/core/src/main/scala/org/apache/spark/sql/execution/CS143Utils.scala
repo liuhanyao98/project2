@@ -277,12 +277,18 @@ object AggregateIteratorGenerator {
 
       def hasNext() = {
         /* IMPLEMENT THIS METHOD */
-        false
+        input.hasNext
       }
 
       def next() = {
         /* IMPLEMENT THIS METHOD */
-        null
+        if(!hasNext) {
+          throw new SparkException("Next element doesn't exist.")
+        }
+
+        val (nextRow, aggregateFunc)=input.next()
+        val result=aggregateFunc.eval(EmptyRow) 
+        postAggregateProjection(new JoinedRow(result,nextRow))
       }
     }
   }
