@@ -164,31 +164,8 @@ case class SpillableAggregate(
           nextBuffer.update(nextRow)
         }
         val newSchema=Seq(aggregatorSchema) ++ namedGroups.map(_._2)
-        AggregateIteratorGenerator(resultExpression, newSchema)(currentAggregationTable.iterator)
-
-        //code from github
-        /*var curRow: Row = null
-        while (data.hasNext) {
-          curRow = data.next()
-          val curGroup = groupingProjection(curRow)
-          // work as hashmap
-          var curBuffer = currentAggregationTable(curGroup)
-
-
-          // not in hashTable
-          if (curBuffer == null) {
-            // check the size of AggregationTable
-            curBuffer = newAggregatorInstance()
-            if(CS143Utils.maybeSpill(currentAggregationTable,memorySize)){
-              spillRecord(curGroup, curRow)
-            }else {
-              currentAggregationTable.update(curGroup, curBuffer)
-            }
-          }
-          curBuffer.update(curRow)
-        }
-        val inputSchema = Seq(aggregatorSchema) ++ namedGroups.map(_._2)
-        AggregateIteratorGenerator(resultExpression, inputSchema)(currentAggregationTable.iterator)*/
+        val res=AggregateIteratorGenerator(resultExpression, newSchema)(currentAggregationTable.iterator)
+        res
       }
 
       /**

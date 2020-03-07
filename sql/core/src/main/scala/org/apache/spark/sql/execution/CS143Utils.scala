@@ -286,8 +286,6 @@ object CachingIteratorGenerator {
         val newResult=new GenericMutableRow(1)
         newResult(0)=aggregateFunc.eval(EmptyRow)
         postAggregateProjection(new JoinedRow4(newResult,nextRow))
-
-
       }
     }
   }
