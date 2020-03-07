@@ -268,7 +268,7 @@ object CachingIteratorGenerator {
   * @param inputSchema
   * @return
   */
-object AggregateIteratorGenerator {
+  object AggregateIteratorGenerator {
   def apply(resultExpressions: Seq[Expression],
             inputSchema: Seq[Attribute]): (Iterator[(Row, AggregateFunction)] => Iterator[Row]) = input => {
 
@@ -285,10 +285,17 @@ object AggregateIteratorGenerator {
         /*if(!hasNext) {
           throw new SparkException("Next element doesn't exist.")
         }*/
+        if(!hasNext()){
+          null
+        }
+        else{
+          val nextRow=input.next()._1
+          val aggregateFunc=input.next()._2
+          val result= new GenericMutableRow(1)
+          result(0)=aggregateFunc.eval(EmptyRow)
+          postAggregateProjection(new JoinedRow4(result,nextRow))
+        }
 
-        val (nextRow, aggregateFunc)=input.next()
-        val result=Row(aggregateFunc.eval(EmptyRow))
-        postAggregateProjection(new JoinedRow(result,nextRow))
       }
     }
   }
