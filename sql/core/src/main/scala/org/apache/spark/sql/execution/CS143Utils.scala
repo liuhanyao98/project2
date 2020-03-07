@@ -284,8 +284,7 @@ object CachingIteratorGenerator {
         /* IMPLEMENT THIS METHOD */
         //my code
 
-        val nextRow=input.next()._1
-        val aggregateFunc=input.next()._2
+        val (nextRow,aggregateFunc)=input.next()
         val newResult= new GenericMutableRow(1)
         newResult(0)=aggregateFunc.eval(EmptyRow)
         val joinedRow = new JoinedRow4
