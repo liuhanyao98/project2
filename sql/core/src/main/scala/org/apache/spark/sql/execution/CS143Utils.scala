@@ -283,31 +283,22 @@ object CachingIteratorGenerator {
       def next() = {
         /* IMPLEMENT THIS METHOD */
         //my code
-        /*if(!hasNext()){
+        if(!hasNext()){
           null
         }else{
           val nextRow=input.next()._1
           val aggregateFunc=input.next()._2
           val result= new GenericMutableRow(1)
           result(0)=aggregateFunc.eval(EmptyRow)
-          postAggregateProjection(new JoinedRow(result,nextRow))
-        }*/
+          postAggregateProjection(new JoinedRow4(result,nextRow))
+        }
 
         //code from wppply
-        val aggResult = new GenericMutableRow(1) //  one Aggregate option
-        //        while (i < currentBuffer.length) {
-        //          // Evaluating an aggregate buffer returns the result.  No row is required since we
-        //          // already added all rows in the group using update.
-        //          aggregateResults(i) = currentBuffer(i).eval(EmptyRow)
-        //          i += 1
-        //        }
+        /*val aggResult = new GenericMutableRow(1) //  one Aggregate option
         val (group, aggFunction) = input.next()
         aggResult(0) = aggFunction.eval(EmptyRow)
-
-
-        //        resultProjection(joinedRow(aggregateResults, currentGroup))
         val joinedRow = new JoinedRow4
-        postAggregateProjection(joinedRow(aggResult,group))
+        postAggregateProjection(joinedRow(aggResult,group))*/
 
       }
     }

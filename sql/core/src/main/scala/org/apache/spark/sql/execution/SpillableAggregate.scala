@@ -195,16 +195,7 @@ case class SpillableAggregate(
             }
           }
           curBuffer.update(curRow)
-
-
-          // curBuffer.update(curRow)
-
-          //          for (i <- 0 to (numPartitions-1)){
-          //            spills(i).closePartition()
-          //          }
-
         }
-        // result ++ groupingattributes ?
         val inputSchema = Seq(aggregatorSchema) ++ namedGroups.map(_._2)
         AggregateIteratorGenerator(resultExpression, inputSchema)(currentAggregationTable.iterator)
       }
