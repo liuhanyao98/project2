@@ -285,11 +285,11 @@ object CachingIteratorGenerator {
         if(!hasNext()){
           null
         }else{
-          var nextRow=input.next()._1
-          var aggregateFunc=input.next()._2
-          var result= new GenericMutableRow(1)
+          val nextRow=input.next()._1
+          val aggregateFunc=input.next()._2
+          val result= new GenericMutableRow(1)
           result(0)=aggregateFunc.eval(EmptyRow)
-          postAggregateProjection(new JoinedRow4(result,nextRow))
+          postAggregateProjection(new JoinedRow(result,nextRow))
         }
       }
     }
