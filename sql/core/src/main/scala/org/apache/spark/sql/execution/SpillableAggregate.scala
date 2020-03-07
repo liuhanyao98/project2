@@ -52,26 +52,6 @@ case class SpillableAggregate(
                                 unbound: AggregateExpression,
                                 aggregate: AggregateExpression,
                                 resultAttribute: AttributeReference)
-  /** A list of aggregates that need to be computed for each group. */
-  /*private[this] val computedAggregates = aggregateExpressions.flatMap { agg =>
-    agg.collect {
-      case a: AggregateExpression =>
-        ComputedAggregate(
-          a,
-          BindReferences.bindReference(a, child.output),
-          AttributeReference(s"aggResult:$a", a.dataType, a.nullable)())
-    }
-  }.toArray*/
-  //code from github
-  /*private[this] val computedAggregates = aggregateExpressions.flatMap { agg => // list of letter
-    agg.collect {
-      case a: AggregateExpression =>
-        ComputedAggregate(
-          a,
-          BindReferences.bindReference(a, child.output),
-          AttributeReference(s"aggResult:$a", a.dataType, a.nullable)())
-    }
-  }.toArray*/
 
   /** Physical aggregator generated from a logical expression.  */
   private[this] val aggregator: ComputedAggregate = {
@@ -171,7 +151,7 @@ case class SpillableAggregate(
         //drain the input iterator into the aggregate table
         //generate an aggregate iterator using the helper function AggregateIteratorGenerator properly formatting the aggregate result
         //use the Iterator inside generateIterator as external interface to access and drive the aggregate iterator.
-        /*var nextRow: Row=null
+        var nextRow: Row=null
         while(data.hasNext){
           nextRow=data.next()
           val nextGroup=groupingProjection(nextRow)
@@ -184,10 +164,10 @@ case class SpillableAggregate(
           nextBuffer.update(nextRow)
         }
         val newSchema=Seq(aggregatorSchema) ++ namedGroups.map(_._2)
-        AggregateIteratorGenerator(resultExpression,newSchema)(currentAggregationTable.iterator)*/
+        AggregateIteratorGenerator(resultExpression, newSchema)(currentAggregationTable.iterator)
 
         //code from github
-        var curRow: Row = null
+        /*var curRow: Row = null
         while (data.hasNext) {
           curRow = data.next()
           val curGroup = groupingProjection(curRow)
@@ -208,7 +188,7 @@ case class SpillableAggregate(
           curBuffer.update(curRow)
         }
         val inputSchema = Seq(aggregatorSchema) ++ namedGroups.map(_._2)
-        AggregateIteratorGenerator(resultExpression, inputSchema)(currentAggregationTable.iterator)
+        AggregateIteratorGenerator(resultExpression, inputSchema)(currentAggregationTable.iterator)*/
       }
 
       /**
