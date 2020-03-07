@@ -283,15 +283,14 @@ object CachingIteratorGenerator {
       def next() = {
         /* IMPLEMENT THIS METHOD */
         //my code
-        if(!hasNext()){
-          null
-        }else{
-          val nextRow=input.next()._1
-          val aggregateFunc=input.next()._2
-          val result= new GenericMutableRow(1)
-          result(0)=aggregateFunc.eval(EmptyRow)
-          postAggregateProjection(new JoinedRow4(result,nextRow))
-        }
+
+        val nextRow=input.next()._1
+        val aggregateFunc=input.next()._2
+        val newResult= new GenericMutableRow(1)
+        newResult(0)=aggregateFunc.eval(EmptyRow)
+        val joinedRow = new JoinedRow4
+        postAggregateProjection(joinedRow(newResult,nextRow))
+
 
         //code from wppply
         /*val aggResult = new GenericMutableRow(1) //  one Aggregate option
