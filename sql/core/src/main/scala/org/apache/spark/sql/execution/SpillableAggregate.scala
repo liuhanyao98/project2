@@ -63,7 +63,7 @@ case class SpillableAggregate(
     }
   }.toArray*/
   //code from github
-  private[this] val computedAggregates = aggregateExpressions.flatMap { agg => // list of letter
+  /*private[this] val computedAggregates = aggregateExpressions.flatMap { agg => // list of letter
     agg.collect {
       case a: AggregateExpression =>
         ComputedAggregate(
@@ -71,16 +71,27 @@ case class SpillableAggregate(
           BindReferences.bindReference(a, child.output),
           AttributeReference(s"aggResult:$a", a.dataType, a.nullable)())
     }
-  }.toArray
+  }.toArray*/
 
   /** Physical aggregator generated from a logical expression.  */
-  private[this] val aggregator: ComputedAggregate = computedAggregates(0)//IMPLEMENT ME //first element of List
+  private[this] val aggregator: ComputedAggregate = {
+    var res = aggregateExpressions.flatMap { agg =>
+      agg.collect {
+        case a: AggregateExpression =>
+          ComputedAggregate(
+            a,
+            BindReferences.bindReference(a, child.output),
+            AttributeReference(s"aggResult:$a", a.dataType, a.nullable)())
+      }
+    }.toArray
+    res(0)
+  }//IMPLEMENT ME
 
   /** Schema of the aggregate.  */
-  private[this] val aggregatorSchema: AttributeReference = aggregator.resultAttribute //IMPLEMENT ME
+  private[this] val aggregatorSchema: AttributeReference = {aggregator.resultAttribute} //IMPLEMENT ME
 
   /** Creates a new aggregator instance.  */
-  private[this] def newAggregatorInstance(): AggregateFunction = aggregator.aggregate.newInstance() //IMPLEMENT ME
+  private[this] def newAggregatorInstance(): AggregateFunction = {aggregator.aggregate.newInstance()} //IMPLEMENT ME
 
   /** Named attributes used to substitute grouping attributes in the final result. */
   private[this] val namedGroups = groupingExpressions.map {
