@@ -137,13 +137,7 @@ case class SpillableAggregate(
 
       def next() = {
         /* IMPLEMENT THIS METHOD */
-        if(!hasNext()){
-          null
-        }
-        else{
-          aggregateResult.next()
-        }
-
+        aggregateResult.next()
       }
 
       /**
@@ -159,17 +153,17 @@ case class SpillableAggregate(
         var nextRow: Row=null
         while(data.hasNext){
           nextRow=data.next()
-          var nextGroup=groupingProjection(nextRow)
+          val nextGroup=groupingProjection(nextRow)
           var nextBuffer=currentAggregationTable(nextGroup)
+
           if(nextBuffer==null){
             nextBuffer=newAggregatorInstance()
-            currentAggregationTable.update(nextGroup,nextBuffer)
+            currentAggregationTable(nextGroup)=nextBuffer
           }
           nextBuffer.update(nextRow)
         }
-        val newSchema=Seq(aggregatorSchema)++namedGroups.map(_._2)
-        val newGenerator=AggregateIteratorGenerator(resultExpression,newSchema)(currentAggregationTable.iterator)
-        newGenerator
+        val newSchema=Seq(aggregatorSchema) ++ namedGroups.map(_._2)
+        AggregateIteratorGenerator(resultExpression,newSchema)(currentAggregationTable.iterator)
       }
 
       /**

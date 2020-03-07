@@ -282,9 +282,6 @@ object CachingIteratorGenerator {
 
       def next() = {
         /* IMPLEMENT THIS METHOD */
-        /*if(!hasNext) {
-          throw new SparkException("Next element doesn't exist.")
-        }*/
         if(!hasNext()){
           null
         }else{
