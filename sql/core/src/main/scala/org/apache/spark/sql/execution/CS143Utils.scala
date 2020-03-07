@@ -285,13 +285,15 @@ object CachingIteratorGenerator {
         /*if(!hasNext) {
           throw new SparkException("Next element doesn't exist.")
         }*/
-        val JoinedRow=new JoinedRow4
-
-        var nextRow=input.next()._1
-        var aggregateFunc=input.next()._2
-        var result= new GenericMutableRow(1)
-        result(0)=aggregateFunc.eval(EmptyRow)
-        postAggregateProjection(JoinedRow(result,nextRow))
+        if(!hasNext()){
+          null
+        }else{
+          var nextRow=input.next()._1
+          var aggregateFunc=input.next()._2
+          var result= new GenericMutableRow(1)
+          result(0)=aggregateFunc.eval(EmptyRow)
+          postAggregateProjection(new JoinedRow4(result,nextRow))
+        }
       }
     }
   }
